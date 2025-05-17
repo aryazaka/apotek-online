@@ -1,0 +1,101 @@
+
+    .btn-kembali {
+        display: inline-block;
+        padding: 8px 20px;
+        background-color: #7171799f; /* dark gray */
+        color: #ffffff; /* light text */
+        border-radius: 5px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .btn-kembali:hover {
+        background-color: #23272b;
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    .btn-keranjang {
+        display: inline-block;
+        padding: 12px 25px;
+        background-color: #e0dd20; /* Bootstrap blue */
+        color: #ffffff;
+        font-weight: 600;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-keranjang:hover {
+        background-color: #e4d5078e;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+        text-decoration: none;
+    }
+
+
+
+    .single-product-item {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .single-product-item:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .single-product-item figure {
+        position: relative;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    .single-product-item img {
+        transition: transform 0.4s ease;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .single-product-item:hover img {
+        transform: scale(1.05);
+    }
+
+    .product-text {
+        padding: 15px 10px;
+        background-color: #fff;
+    }
+
+    .product-text h6 {
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 6px;
+    }
+
+    .product-text p {
+        color: #198754;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    .p-status {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: #198754;
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 5px;
+        font-size: 12px;
+        font-weight: 600;
+        z-index: 2;
+    }
+
+    .p-status.sale {
+        background-color: #dc3545;
+    }
+

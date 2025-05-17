@@ -1,0 +1,168 @@
+.auth-body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(to right, #f9f7f7, #e3e3e3);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url('https://www.transparenttextures.com/patterns/purty-wood.png');
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+
+.form-control {
+    border-radius: 10px;
+    padding: 10px 15px;
+}
+
+label {
+    font-weight: 600;
+}
+
+.login-container {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(138, 43, 226, 0.15);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+}
+
+.login-container h2 {
+    font-family: 'Amatic SC', cursive;
+    font-size: 48px;
+    color: #8a2be2;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.form-group input:focus {
+    border-color: #8a2be2;
+    outline: none;
+    box-shadow: 0 0 5px rgba(138, 43, 226, 0.3);
+}
+
+.site-btn {
+    background-color: #8a2be2;
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.site-btn:hover {
+    background-color: #6c1cb2;
+}
+
+.login-container a {
+    display: inline-block;
+    margin-top: 15px;
+    color: #8a2be2;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.login-container a:hover {
+    text-decoration: underline;
+}
+
+.register-container {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(138, 43, 226, 0.15);
+    width: 100%;
+    max-width: 460px;
+    text-align: center;
+    margin-top: 50px;
+
+}
+
+.register-container h2 {
+    font-family: 'Amatic SC', cursive;
+    font-size: 48px;
+    color: #8a2be2;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.form-group input:focus {
+    border-color: #8a2be2;
+    outline: none;
+    box-shadow: 0 0 5px rgba(138, 43, 226, 0.3);
+}
+
+.site-btn {
+    background-color: #8a2be2;
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.site-btn:hover {
+    background-color: #6c1cb2;
+}
+
+.register-container a {
+    display: inline-block;
+    margin-top: 15px;
+    color: #8a2be2;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.register-container a:hover {
+    text-decoration: underline;
+}
+
+
+
+.profile-photo {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    transition: box-shadow 0.2s;
+}
+
+.profile-photo:hover {
+    box-shadow: 0 0 8px rgba(0,0,0,0.2);
+}
