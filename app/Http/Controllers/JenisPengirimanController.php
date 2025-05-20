@@ -32,7 +32,8 @@ class JenisPengirimanController extends Controller
         $validated = $request->validate([
             'jenis_kirim' => 'required|string|max:255',
             'nama_ekspedisi' => 'required|string|max:255',
-            'logo_ekspedisi' => 'nullable|image|max:2048'
+            'logo_ekspedisi' => 'nullable|image|max:2048',
+            'harga' => 'nullable|numeric',
         ]);
 
         if ($request->hasFile('logo_ekspedisi')) {
@@ -57,7 +58,8 @@ class JenisPengirimanController extends Controller
         $validated = $request->validate([
             'jenis_kirim' => 'required|string|max:255',
             'nama_ekspedisi' => 'required|string|max:255',
-            'logo_ekspedisi' => 'nullable|image|max:2048'
+            'logo_ekspedisi' => 'nullable|image|max:2048',
+            'harga' => 'nullable|numeric',
         ]);
 
         if ($request->hasFile('logo_ekspedisi')) {

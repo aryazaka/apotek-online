@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\JenisObat;
 use App\Models\Keranjang;
+use App\Models\Penjualan;
 
 class HomeController extends Controller
 {
@@ -22,6 +23,10 @@ class HomeController extends Controller
             ? Auth::guard('pelanggan')->user()->id
             : null;
 
+        $pesananAktif = Penjualan::where('id_pelanggan', $idPelanggan)
+            ->whereIn('status_order', ['Menunggu Konfirmasi', 'Diproses', 'Menunggu Kurir', 'Dalam Pengiriman'])
+            ->exists();
+
         return view('fe.home.index', [
             'title' => 'Home',
             'user' => Auth::guard('pelanggan')->user(),
@@ -29,6 +34,7 @@ class HomeController extends Controller
             'keranjangs' => Keranjang::where('id_pelanggan', $idPelanggan)
                 ->with('obat')
                 ->get(),
+            'pesananAktif' => $pesananAktif,
         ]);
     }
 

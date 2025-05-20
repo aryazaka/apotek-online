@@ -15,6 +15,7 @@ return new class extends Migration
                     $table->id();
                     $table->enum('jenis_kirim', ['ekonomi', 'kargo', 'regular', 'same day', 'standar']);
                     $table->string('nama_ekspedisi', 255);
+                    $table->decimal('harga', 10);
                     $table->string('logo_ekspedisi', 255)->nullable();
                     $table->timestamps();
                 });
@@ -23,7 +24,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function down(): void 
     {
         Schema::dropIfExists('jenis_pengirimen');
     }

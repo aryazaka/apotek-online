@@ -94,7 +94,7 @@
                         <select name="id_jenis_kirim" id="id_jenis_kirim" class="form-control" required>
                             <option value="">-- Pilih Jenis Kirim --</option>
                             @foreach ($jenisKirimList as $jenis)
-                            <option value="{{ $jenis->id }}">{{ ucfirst($jenis->jenis_kirim) }} (Rp{{ number_format($jenis->biaya, 0, ',', '.') }})</option>
+                            <option data-biaya="{{ $jenis->harga }}" value="{{ $jenis->id }}">{{ ucfirst($jenis->jenis_kirim) }} (Rp{{ number_format($jenis->harga, 0, ',', '.') }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -124,7 +124,7 @@
                         </li>
                         <li class="list-group-item d-flex justify-content-between">
                             <span>Biaya Aplikasi</span>
-                            <strong id="biaya-app">Rp1.000</strong> {{-- tetap, atau bisa dari config --}}
+                            <strong id="biaya-app">Rp1.000</strong>
                         </li>
                         <li class="list-group-item d-flex justify-content-between fw-bold">
                             <span>Total Bayar</span>
@@ -134,7 +134,7 @@
                 </div>
                 @endif
 
-                <div class="d-flex justify-content-end mt-4">
+                <div class="d-flex justify-content-end mt-4 mb-3">
                     <button type="submit" formaction="{{ route('checkout.post') }}" class="btn btn-primary" id="btn-checkout" disabled>Checkout Produk Terpilih</button>
 
                 </div>

@@ -140,6 +140,13 @@
       }
     }
 
+     if (document.body.id === 'pengiriman-index') {
+      let msg = document.body.dataset.success;
+      if (msg) {
+        swal("Berhasil!", msg, "success");
+      }
+    }
+
     if (document.body.id === 'auth-management-index') {
       let msg = document.body.dataset.failed;
       if (msg) {

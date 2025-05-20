@@ -10,7 +10,8 @@ use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PenjualanExport;
-
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 class PenjualanController extends Controller
 {
     /**
@@ -18,11 +19,39 @@ class PenjualanController extends Controller
      */
     public function index(Request $request)
     {
-        $penjualans = Penjualan::with(['pelanggan', 'detailPenjualan.obat'])->get();
+        if (Auth::user()->jabatan == 'kasir') {
+            $penjualans = Penjualan::with(['pelanggan', 'detailPenjualan.obat'])->whereIn('status_order', [
+                'Menunggu Konfirmasi',
+                'Diproses',
+                'Dibatalkan Penjual',
+                'Dibatalkan Pembeli',
+                'Dalam Pengiriman',
+                'Bermasalah',
+                'Selesai'
+            ])->get();
+        } else if (Auth::user()->jabatan === 'karyawan') {
+            $penjualans = Penjualan::with(['pelanggan', 'detailPenjualan.obat'])->whereIn('status_order', [
+                'Diproses',
+                'Menunggu Kurir',
+                'Dibatalkan Pembeli',
+                'Dalam Pengiriman',
+                'Bermasalah',
+                'Selesai'
+            ])->get();
+        }
 
+        $statusOptions = match (Auth::user()->jabatan) {
+            'kasir' => ['Menunggu Konfirmasi', 'Diproses', 'Dibatalkan Penjual'],
+            'karyawan' => ['Diproses', 'Menunggu Kurir'],
+            default => []
+        };
+
+        $kurir = Auth::user();
         return view('be.penjualan.index', [
             'title' => 'Penjualan',
             'penjualans' => $penjualans,
+            'statusOptions' => $statusOptions,
+            'kurirs' => User::where('jabatan', 'kurir')->get(),
         ]);
     }
 
@@ -60,7 +89,7 @@ class PenjualanController extends Controller
 
     public function laporanIndex(Request $request)
     {
-         $query = Penjualan::with(['pelanggan', 'detailPenjualan.Obat']);
+        $query = Penjualan::with(['pelanggan', 'detailPenjualan.Obat']);
 
         if ($request->filled('from') && $request->filled('to')) {
             $query->whereBetween('tgl_penjualan', [$request->from, $request->to]);
@@ -72,32 +101,32 @@ class PenjualanController extends Controller
             'penjualans' => $penjualans,
         ]);
     }
-        public function exportExcel(Request $request)
-        {
-            return Excel::download(new PenjualanExport($request->from, $request->to), 'data_penjualan.xlsx');
-        }
+    public function exportExcel(Request $request)
+    {
+        return Excel::download(new PenjualanExport($request->from, $request->to), 'data_penjualan.xlsx');
+    }
 
     public function exportPdf(Request $request)
     {
-        $penjualans = Penjualan::with(['detailPenjualan.obat', 'pelanggan'])
-        ->when($request->from, fn($q) => $q->whereDate('tgl_penjualan', '>=', $request->from))  // Filter berdasarkan tgl_penjualan
-        ->when($request->to, fn($q) => $q->whereDate('tgl_penjualan', '<=', $request->to))    // Filter berdasarkan tgl_penjualan
-        ->orderBy('tgl_penjualan', 'asc')  // Urutkan berdasarkan tgl_penjualan
-        ->get();
+        $penjualans = Penjualan::with(['detailPenjualan.obat', 'pelanggan', 'pengiriman'])
+            ->when($request->from, fn($q) => $q->whereDate('tgl_penjualan', '>=', $request->from))  // Filter berdasarkan tgl_penjualan
+            ->when($request->to, fn($q) => $q->whereDate('tgl_penjualan', '<=', $request->to))    // Filter berdasarkan tgl_penjualan
+            ->orderBy('tgl_penjualan', 'asc')  // Urutkan berdasarkan tgl_penjualan
+            ->get();
 
-    $from = $penjualans->min('tgl_penjualan') ? \Carbon\Carbon::parse($penjualans->min('tgl_penjualan'))->format('Y-m-d') : 'Semua Data';
-    $to = $penjualans->max('tgl_penjualan') ? \Carbon\Carbon::parse($penjualans->max('tgl_penjualan'))->format('Y-m-d') : 'Semua Data';
+        $from = $penjualans->min('tgl_penjualan') ? \Carbon\Carbon::parse($penjualans->min('tgl_penjualan'))->format('Y-m-d') : 'Semua Data';
+        $to = $penjualans->max('tgl_penjualan') ? \Carbon\Carbon::parse($penjualans->max('tgl_penjualan'))->format('Y-m-d') : 'Semua Data';
 
-    $totalSeluruhPenjualan = $penjualans->sum('total_bayar');
+        $totalSeluruhPenjualan = $penjualans->sum('total_bayar');
 
-    $pdf = PDF::loadView('be.laporan.penjualan.pdf', [
-        'penjualans' => $penjualans,
-        'totalSeluruhPenjualan' => $totalSeluruhPenjualan,
-        'from' => $from,
-        'to' => $to,
-    ])->setPaper('A4', 'portrait');
+        $pdf = PDF::loadView('be.laporan.penjualan.pdf', [
+            'penjualans' => $penjualans,
+            'totalSeluruhPenjualan' => $totalSeluruhPenjualan,
+            'from' => $from,
+            'to' => $to,
+        ])->setPaper('A4', 'portrait');
 
-    return $pdf->download('laporan_penjualan.pdf');
+        return $pdf->download('laporan_penjualan.pdf');
     }
     /**
      * Show the form for creating a new resource.

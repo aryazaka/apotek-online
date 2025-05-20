@@ -19,9 +19,14 @@ class Pengiriman extends Model
         'tgl_tiba',
         'status_kirim', 
         'nama_kurir',
-        'telepon_kurir',
+        'telpon_kurir',
         'bukti_foto',
         'keterangan',
     ];
 
+    public function penjualan()
+    {
+        return $this->belongsTo(Penjualan::class, 'id_penjualan');
+    }
 }
+

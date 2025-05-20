@@ -14,7 +14,7 @@
 <div class="card">
     <div class="card-body">
         <h4 class="card-title">Buat Jenis Pengiriman</h4>
-        <form class="forms-sample" method="POST" action="{{ route('jenis-pengiriman.store') }}" enctype="multipart/form-data" id="frmJenisKirim">
+        <form class="forms-sample" method="POST" action="{{ route('jenis-kirim.store') }}" enctype="multipart/form-data" id="frmJenisKirim">
 
         @csrf
 
@@ -22,6 +22,14 @@
                 <label for="ekspedisi">Nama Ekspedisi</label>
                 <input type="text" class="form-control @error('ekspedisi') is-invalid @enderror" id="ekspedisi" name="nama_ekspedisi" placeholder="Nama Ekspedisi" value="{{ old('ekspedisi') }}">
                 @error('nama_ekspedisi')
+                    <div class="invalid-feedback">{{$message}}</div>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="ekspedisi">Harga</label>
+                <input type="number" class="form-control @error('harga') is-invalid @enderror" id="harga" name="harga" placeholder="Harga" value="{{ old('harga') }}">
+                @error('harga')
                     <div class="invalid-feedback">{{$message}}</div>
                 @enderror
             </div>
@@ -72,16 +80,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    let form         = document.getElementById('frmJenisKirim');
-    let btnSave      = document.getElementById('btn-simpan');
-    let btnCancel    = document.getElementById('btn-cancel');
+    const form         = document.getElementById('frmJenisKirim');
+    const btnSave      = document.getElementById('btn-simpan');
+    const btnCancel    = document.getElementById('btn-cancel');
 
-    let fieldEkspedisi = document.getElementById('ekspedisi');
-    let fieldJenis     = document.getElementById('jenis_kirim');
+    const fieldEkspedisi = document.getElementById('ekspedisi');
+    const fieldJenis     = document.getElementById('jenis_kirim');
+    const fieldHarga     = document.getElementById('harga');
 
-    let fieldLogo    = document.getElementById('logo');
-    let fileLabel    = document.getElementById('labelLogo');
-    let btnBrowse    = document.getElementById('btnLogo');
+    const fieldLogo    = document.getElementById('logo');
+    const fileLabel    = document.getElementById('labelLogo');
+    const btnBrowse    = document.getElementById('btnLogo');
 
     btnBrowse.addEventListener('click', function(){
         fieldLogo.click();
@@ -93,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     btnCancel.addEventListener('click', function(){
-        window.location = "{{ route('jenis-pengiriman.index') }}";
+        window.location = "{{ route('jenis-kirim.index') }}";
     });
 
     btnSave.addEventListener('click', function(event) {
@@ -118,6 +127,19 @@ document.addEventListener('DOMContentLoaded', function() {
             fieldJenis.classList.add('is-invalid');
             swal("Invalid Data", "Jenis kirim harus diisi!", "error")
                 .then(function(){ fieldJenis.focus(); });
+            return;
+        }
+        let harga = fieldHarga.value;
+        if (!fieldHarga.value.trim() || fieldHarga.value <= 0) {
+            fieldHarga.classList.add('is-invalid');
+            swal("Invalid Data", "Harga harus diisi!", "error")
+                .then(function(){ fieldHarga.focus(); });
+            return;
+        }
+        if(harga.length > 20){
+            fieldHarga.classList.add('is-invalid');
+            swal("Invalid Data", "Harga tidak boleh lebih dari 20 digit!", "error")
+                .then(function(){ fieldHarga.focus(); });
             return;
         }
 

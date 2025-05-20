@@ -13,6 +13,7 @@ class JenisPengiriman extends Model
     protected $fillable = [
         'jenis_kirim',
         'nama_ekspedisi',
+        'harga',
         'logo_ekspedisi',
     ];
 }

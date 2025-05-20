@@ -14,7 +14,7 @@
     
 <div class="d-flex justify-content-between align-items-center mx-4 my-4">
     <h2 class="section-title">Jenis Pengiriman</h2>
-    <a href="{{ route('jenis-pengiriman.create') }}">
+    <a href="{{ route('jenis-kirim.create') }}">
         <button type="button" class="btn btn-primary">
             <i class="mdi mdi-plus-circle-outline"></i> Tambah Jenis Pengiriman
         </button>
@@ -32,6 +32,7 @@
         <tr>
             <th>No</th>
             <th>Nama Ekspedisi</th>
+            <th>Harga</th>
             <th>Jenis Pengiriman</th>
             <th>Logo Ekspedisi</th>
             <th>Action</th>
@@ -47,6 +48,14 @@
                 {{ substr($data['nama_ekspedisi'], 0, 20) . '...' }}
                 @else
                 {{ $data['nama_ekspedisi'] }}
+                @endif
+            </td>
+
+            <td class="tooltip-custom" data-tooltip="{{ $data['harga'] }}">
+                @if(strlen($data['harga']) > 20)
+                {{ substr('Rp. ' . $data['harga'], 0, 20) . '...' }}
+                @else
+                {{ 'Rp. ' . $data['harga'] }}
                 @endif
             </td>
 
@@ -68,13 +77,13 @@
             </td>
 
             <td style="display: flex; gap: 25px; align-items: center; justify-content: center;">
-                <a href="{{ route('jenis-pengiriman.edit', $data['id']) }}"
+                <a href="{{ route('jenis-kirim.edit', $data['id']) }}"
                     data-tooltip="Edit"
                     class="tooltip-custom btn btn-warning btn-sm d-flex align-items-center justify-content-center"
                     style="width: 35px; height: 35px;">
                     <i class="mdi mdi-grease-pencil" style="font-size: 20px; color: white;"></i>
                 </a>
-                <a href="{{ route('jenis-pengiriman.destroy', $data['id']) }}"
+                <a href="{{ route('jenis-kirim.destroy', $data['id']) }}"
                         onclick="hapus(event, this)"
                         data-tooltip="Hapus"
                         class="tooltip-custom btn btn-danger btn-sm d-flex align-items-center justify-content-center btn-delete"

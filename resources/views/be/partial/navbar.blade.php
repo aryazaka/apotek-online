@@ -1,15 +1,32 @@
 <!-- partial:partials/_navbar.html -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+<style>
+    .text-logo {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 28px;
+        font-weight: 700;
+        color: #2b2b2b;
+        text-decoration: none;
+    }
+
+    .text-logo:hover {
+        color: #007bff; /* efek hover */
+    }
+</style>
+
 <nav class="navbar p-0 fixed-top d-flex flex-row">
   <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-    <a class="navbar-brand brand-logo-mini" href="{{ route('dashboard.index') }}"><img src="{{ asset('be/assets/images/logo-mini.svg') }}" alt="logo" /></a>
+    <div class="logo">
+                  <a href="{{ route('dashboard.index') }}" class="text-logo">A</a>
+              </div>
   </div>
   <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
     <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
       <span class="mdi mdi-menu"></span>
     </button>
-  
+
     <ul class="navbar-nav navbar-nav-right">
-      <li class="nav-item dropdown border-left">
+      <!-- <li class="nav-item dropdown border-left">
         <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-toggle="dropdown">
           <i class="mdi mdi-bell"></i>
           <span class="count bg-danger"></span>
@@ -55,11 +72,11 @@
           <div class="dropdown-divider"></div>
           <p class="p-3 mb-0 text-center">See all notifications</p>
         </div>
-      </li>
+      </li> -->
       <li class="nav-item dropdown">
         <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
           <div class="navbar-profile">
-            <img class="img-xs rounded-circle" src="{{ asset('be/assets/images/faces/face15.jpg') }}" alt="">
+            <img class="img-xs rounded-circle" src="{{ asset('be/assets/images/faces/pp-none.jpg') }}" alt="">
             <p class="mb-0 d-none d-sm-block navbar-profile-name">{{ Auth::user()->name }}</p>
             <i class="mdi mdi-menu-down d-none d-sm-block"></i>
           </div>
@@ -78,18 +95,20 @@
             </div>
           </a>
           <div class="dropdown-divider"></div>
-          <form action="{{ route('auth-management.logout') }}" method="POST" class="dropdown-item preview-item">
+          <form action="{{ route('auth-management.logout') }}" method="POST" style="all: unset;">
             @csrf
-            <div class="preview-thumbnail">
-              <div class="preview-icon bg-dark rounded-circle">
-                <i class="mdi mdi-logout text-danger"></i>
+            <button type="submit" class="dropdown-item preview-item" style=" cursor: pointer;">
+              <div class="preview-thumbnail">
+                <div class="preview-icon bg-dark rounded-circle">
+                  <i class="mdi mdi-logout text-danger"></i>
+                </div>
               </div>
-            </div>
-            <div class="preview-item-content">
-            <button type="submit" style="background: none; border: none; color: #dc3545; font-size: 14px; padding: 0; text-align: left;">Logout</button>
-            </div>
-            
+              <div class="preview-item-content" style="color: #dc3545;">
+                Logout
+              </div>
+            </button>
           </form>
+
           <div class="dropdown-divider"></div>
           <p class="p-3 mb-0 text-center">Advanced settings</p>
         </div>

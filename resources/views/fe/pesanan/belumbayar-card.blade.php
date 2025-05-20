@@ -31,6 +31,30 @@
                     </p>
                 </div>
 
+                <div class="mb-2">
+                    <small class="text-muted">Alamat Tujuan:</small>
+                    <div class="fw-semibold">
+                        @php
+                        $pelanggan = $belumBayar->pelanggan;
+                        $alamatLengkap = '-';
+                        if ($pelanggan) {
+                        for ($i = 1; $i <= 3; $i++) {
+                            $alamat=$pelanggan->{"alamat$i"};
+                            if ($alamat) {
+                            $alamatLengkap = $alamat . ', ' .
+                            $pelanggan->{"kota$i"} . ', ' .
+                            $pelanggan->{"propinsi$i"} . ', ' .
+                            $pelanggan->{"kodepos$i"};
+                            break;
+                            }
+                            }
+                            }
+                            @endphp
+                            {{ $alamatLengkap }}
+                    </div>
+                </div>
+
+
                 @if($belumBayar->keterangan_status)
                 <p class="small text-muted mb-2 fst-italic">{{ $belumBayar->keterangan_status }}</p>
                 @endif
@@ -63,14 +87,14 @@
                     <i class="fa-solid fa-credit-card me-1 small"></i>
                     Bayar Sekarang
                 </button>
-               <form action="{{ route('pesanan.batalkan', $belumBayar->id) }}" method="POST" id="cancelOrderForm" class="w-100">
-    @csrf
-    @method('DELETE')
-    <button type="submit" class="btn btn-outline-danger w-100">
-        <i class="fa-solid fa-xmark me-1 small"></i>
-        Batal Bayar
-    </button>
-</form>
+                <form action="{{ route('pesanan.batalkan', $belumBayar->id) }}" method="POST" id="cancelOrderForm" class="w-100">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-outline-danger w-100">
+                        <i class="fa-solid fa-xmark me-1 small"></i>
+                        Batal Bayar
+                    </button>
+                </form>
 
                 @endisset
             </div>
@@ -209,13 +233,13 @@
                     Bayar Sekarang
                 </button>
                 <form action="{{ route('pesanan.batalkan', $belumBayar->id) }}" method="POST" id="cancelOrderForm" class="w-100">
-    @csrf
-    @method('DELETE')
-    <button type="submit" class="btn btn-outline-danger w-100">
-        <i class="fa-solid fa-xmark me-1 small"></i>
-        Batal Bayar
-    </button>
-</form>
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-outline-danger w-100">
+                        <i class="fa-solid fa-xmark me-1 small"></i>
+                        Batal Bayar
+                    </button>
+                </form>
 
                 @endisset
             </div>
@@ -311,7 +335,29 @@
                 Swal.fire('Menunggu Pembayaran', 'Pembayaran sedang diproses.', 'info');
             },
             onError: function(result) {
-                Swal.fire('Gagal', 'Pembayaran gagal.', 'error');
+                // Kirim status bermasalah ke server
+                fetch("{{ route('pesanan.update-status', $belumBayar->id) }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            order_id: result.order_id,
+                            payment_type: result.payment_type,
+                            transaction_status: result.transaction_status ?? 'error',
+                            va_numbers: result.va_numbers ?? [],
+                            transaction_id: result.transaction_id,
+                            gross_amount: result.gross_amount
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        Swal.fire('Error', 'Transaksi gagal atau bermasalah.', 'error');
+                    })
+                    .catch(error => {
+                        Swal.fire('Error', 'Gagal memproses transaksi bermasalah.', 'error');
+                    });
             }
         });
     }

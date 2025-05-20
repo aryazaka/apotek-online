@@ -21,7 +21,7 @@
         <button class="nav-link" id="diproses-tab" data-bs-toggle="tab" data-bs-target="#diproses" type="button">
             Sedang Diproses
             @if($diprosess->count())
-                <span class="badge bg-warning text-dark ms-1">{{ $diprosess->count() }}</span>
+                <span class="badge bg-warning ms-1">{{ $diprosess->count() }}</span>
             @endif
         </button>
     </li>
@@ -29,7 +29,23 @@
         <button class="nav-link" id="pengiriman-tab" data-bs-toggle="tab" data-bs-target="#pengiriman" type="button">
             Pengiriman
             @if($pengirimans->count())
-                <span class="badge bg-info text-dark ms-1">{{ $pengirimans->count() }}</span>
+                <span class="badge bg-info ms-1">{{ $pengirimans->count() }}</span>
+            @endif
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" id="selesai-tab" data-bs-toggle="tab" data-bs-target="#selesai" type="button">
+            Selesai
+            @if($selesaiPengirimanCount)
+                <span class="badge bg-success ms-1">{{ $selesaiPengirimanCount }}</span>
+            @endif
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" id="salah-tab" data-bs-toggle="tab" data-bs-target="#salah" type="button">
+            Dibatalkan/Bermasalah
+            @if($salahs->count())
+                <span class="badge bg-danger ms-1">{{ $salahs->count() }}</span>
             @endif
         </button>
     </li>
@@ -59,6 +75,24 @@
         <div class="tab-pane fade" id="pengiriman">
             @forelse ($pengirimans as $pengiriman)
                 @include('fe.pesanan.pengiriman-card', ['pengiriman' => $pengiriman])
+            @empty
+                <p>Tidak ada pesanan.</p>
+            @endforelse
+        </div>
+
+        {{-- Selesai --}}
+        <div class="tab-pane fade" id="selesai">
+            @forelse ($selesais as $selesai)
+                @include('fe.pesanan.selesai-card', ['selesai' => $selesai])
+            @empty
+                <p>Tidak ada pesanan.</p>
+            @endforelse
+        </div>
+
+        {{-- Salah --}}
+        <div class="tab-pane fade show" id="salah">
+            @forelse ($salahs as $salah)
+                @include('fe.pesanan.salah-card', ['salah' => $salah])
             @empty
                 <p>Tidak ada pesanan.</p>
             @endforelse

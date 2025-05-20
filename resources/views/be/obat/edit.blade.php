@@ -47,7 +47,7 @@
 
             <div class="form-group">
                 <label>Harga (Rp.)</label>
-                <input type="number" class="form-control @error('harga_jual') is-invalid @enderror" id="harga_jual" name="harga_jual" value="{{ old('harga_jual', $data->harga_jual) }}" placeholder="Harga Jual">
+                <input style="background-color: #2A3038;" type="number" class="form-control @error('harga_jual') is-invalid @enderror" id="harga_jual" name="harga_jual" value="{{ old('harga_jual', $data->harga_jual) }}" placeholder="Harga Jual" @if(Auth::user()->jabatan === 'karyawan') disabled @endif>
                 @error('harga_jual')
                     <div class="invalid-feedback">{{$message}}</div>
                 @enderror

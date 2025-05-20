@@ -79,12 +79,13 @@
             Detail
           </button>
 
-          @if($penjualan->status_order !== 'Dibatalkan Pembeli')
+          @if(!in_array($penjualan->status_order, ['Dibatalkan Pembeli', 'Bermasalah', 'Selesai']))
           <!-- Tombol Ubah Status -->
           <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalStatus{{ $penjualan->id }}">
             Ubah Status
           </button>
           @endif
+
         </td>
 
       </tr>
@@ -135,6 +136,16 @@
             </tbody>
           </table>
         </div>
+
+        @if($penjualan->url_resep)
+        <div class="mt-3">
+          <h6 class="fw-bold mb-2">Resep Dokter</h6>
+          <img src="{{ asset('storage/' . $penjualan['url_resep']) }}"
+            class="img-thumbnail popup-image"
+            style="width:50px; height:auto; cursor:pointer;"
+            alt="Foto {{ $penjualan['url_resep'] }}">
+        </div>
+        @endif
       </div>
       <div class="modal-footer bg-black text-white rounded-bottom-4">
         <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Tutup</button>
@@ -157,23 +168,58 @@
       <form action="{{ route('penjualan.updateStatus', $penjualan->id) }}" method="POST">
         @method('PUT')
         @csrf
+
+        @php
+        $selectedStatus = old('status_order', $penjualan->status_order ?? '');
+        @endphp
+
         <div class="modal-body px-4 py-3">
           <div class="mb-3">
             <label class="form-label fw-semibold">Pilih Status Baru</label>
             <select name="status_order" class="form-select rounded shadow-sm border-primary" required>
-              <option value="" disabled selected>-- Pilih Status --</option>
-              <option value="Menunggu Konfirmasi">Menunggu Konfirmasi</option>
-              <option value="Diproses">Diproses</option>
-              <option value="Menunggu Kurir">Menunggu Kurir</option>
-              <option value="Selesai">Selesai</option>
-              <option value="Bermasalah">Bermasalah</option>
-              <option value="Dibatalkan Penjual">Dibatalkan Penjual</option>
+              <option value="" disabled {{ $selectedStatus == '' ? 'selected' : '' }}>-- Pilih Status --</option>
+              @foreach ($statusOptions as $status)
+              <option value="{{ $status }}" {{ $selectedStatus == $status ? 'selected' : '' }}>
+                {{ $status }}
+              </option>
+              @endforeach
             </select>
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Keterangan Status</label>
-            <textarea name="keterangan_status" class="form-control shadow-sm border-primary rounded" rows="3" placeholder="Tulis keterangan tambahan jika diperlukan..."></textarea>
+            <textarea name="keterangan_status" class="form-control shadow-sm border-primary rounded" rows="3" placeholder="Tulis keterangan tambahan jika diperlukan...">{{ old('keterangan_status', $penjualan->keterangan_status) }}</textarea>
+
+            @if($penjualan->url_resep)
+            <div class="mt-3">
+              <h6 class="fw-bold mb-2">Resep Dokter</h6>
+              <img src="{{ asset('storage/' . $penjualan['url_resep']) }}"
+                class="img-thumbnail popup-image"
+                style="width:50px; height:auto; cursor:pointer;"
+                alt="Foto {{ $penjualan['url_resep'] }}">
+            </div>
+            @endif
+
+            <!-- @php
+        $selectedKurir = old('nama_kurir', $penjualan->nama_kurir ?? '');
+        @endphp
+
+            <div class="mt-3 kurir-fields" style="display: none;">
+              <label class="form-label fw-semibold">Nama Kurir</label>
+              <select name="nama_kurir" class="form-select rounded shadow-sm border-primary" required>
+              <option value="" disabled {{ $selectedKurir == '' ? 'selected' : '' }}>-- Pilih Kurir --</option>
+              @foreach ($kurirs as $kurir)
+              <option value="{{ $kurir->name }}" {{ $selectedKurir == $kurir->name ? 'selected' : '' }}>
+                {{ $kurir->name }}
+              </option>
+              @endforeach
+            </select>
+            </div>
+
+            <div class="mt-3 kurir-fields" style="display: none;">
+              <label class="form-label fw-semibold">Telepon Kurir</label>
+              <input type="text" name="telepon_kurir" class="form-control shadow-sm border-primary rounded" placeholder="Masukkan nomor kurir">
+            </div> -->
           </div>
         </div>
 
@@ -188,6 +234,16 @@
 
 @endforeach
 
+<!-- Modal untuk menampilkan gambar besar -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <img src="" id="modalImage" class="img-fluid" alt="Foto Detail">
+      </div>
+    </div>
+  </div>
+</div>
 <!-- filter tanggal -->
 <script>
   const filterAwal = document.getElementById('filterAwal');
@@ -232,6 +288,33 @@
 
   filterAwal.addEventListener('change', filterTanggal);
   filterAkhir.addEventListener('change', filterTanggal);
+</script>
+
+<!-- menunggu kurir -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const modals = document.querySelectorAll('[id^="modalStatus"]');
+
+    modals.forEach(modal => {
+      const selectStatus = modal.querySelector('select[name="status_order"]');
+      const kurirFields = modal.querySelectorAll('.kurir-fields');
+
+      function toggleKurirFields() {
+        const selected = selectStatus.value;
+        if (selected === 'Menunggu Kurir') {
+          kurirFields.forEach(el => el.style.display = 'block');
+        } else {
+          kurirFields.forEach(el => el.style.display = 'none');
+        }
+      }
+
+      selectStatus.addEventListener('change', toggleKurirFields);
+
+      // Inisialisasi awal saat modal dibuka
+      modal.addEventListener('shown.bs.modal', toggleKurirFields);
+    });
+  });
 </script>
 
 @endsection

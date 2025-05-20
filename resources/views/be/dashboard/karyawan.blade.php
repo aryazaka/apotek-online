@@ -5,10 +5,44 @@
 @section('sidebar')
 @include('be/partial/sidebar')
 @endsection
-@section('footer')
-@include('be/partial/footer')
-@endsection
 
 @section('content')
-    <div><h1>ini dashboard Karyawan</h1></div>
+<div class="px-4 mt-4">
+
+    {{-- Header --}}
+    <div class="text-center my-4">
+        <h2 class="section-title">📊 Statistik Penjualan & Obat</h2>
+        <hr class="w-25 mx-auto border-success">
+    </div>
+
+    <div class="row mb-4 justify-content-center">
+
+        <!-- Total Obat -->
+        <div class="col-md-4 mb-3">
+            <div class="card border-start border-4 border-success shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-pills fa-2x text-success mb-2"></i>
+                    <h5 class="card-title">Total Produk Obat</h5>
+                    <h3 class="text-success">{{ $jumlahObat }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Pembelian (ditengah) -->
+ 
+
+        <!-- Total Distributor -->
+        <div class="col-md-4 mb-3">
+            <div class="card border-start border-4 border-success shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-truck fa-2x text-success mb-2"></i>
+                    <h5 class="card-title">Total Penjualan</h5>
+                    <h3 class="text-success">{{ $jumlahPenjualan }}</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
 @endsection

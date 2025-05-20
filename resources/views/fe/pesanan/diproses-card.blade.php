@@ -1,5 +1,3 @@
-@if($diproses->status_order == 'Diproses' ||
-($diproses->status_order == 'Menunggu Konfirmasi' && $diproses->keterangan_status == 'Tunggu Konfirmasi dari Admin'))
 
 <div class="card mb-4 shadow-sm border">
     <div class="card-header bg-white">
@@ -8,8 +6,6 @@
             Tanggal Pembelian: {{ \Carbon\Carbon::parse($diproses->tgl_penjualan)->format('d M Y') }}
         </h6>
     </div>
-
-
 
     @foreach($diproses->detailPenjualan as $detail)
 
@@ -38,6 +34,29 @@
                         </span>
                     </p>
                 </div>
+
+                <div class="mb-2">
+                        <small class="text-muted">Alamat Tujuan:</small>
+                        <div class="fw-semibold">
+                            @php
+                            $pelanggan = $diproses->pelanggan;
+                            $alamatLengkap = '-';
+                            if ($pelanggan) {
+                            for ($i = 1; $i <= 3; $i++) {
+                                $alamat=$pelanggan->{"alamat$i"};
+                                if ($alamat) {
+                                $alamatLengkap = $alamat . ', ' .
+                                $pelanggan->{"kota$i"} . ', ' .
+                                $pelanggan->{"propinsi$i"} . ', ' .
+                                $pelanggan->{"kodepos$i"};
+                                break;
+                                }
+                                }
+                                }
+                                @endphp
+                                {{ $alamatLengkap }}
+                        </div>
+                    </div>
 
                 @if($diproses->keterangan_status)
                 <p class="small text-muted fst-italic">{{ $diproses->keterangan_status }}</p>
@@ -115,5 +134,3 @@
     </div>
 </div>
 @endforeach
-
-@endif

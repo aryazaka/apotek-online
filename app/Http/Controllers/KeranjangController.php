@@ -23,6 +23,11 @@ class KeranjangController extends Controller
         $penjualan = session('penjualan');
 
         $idPelanggan = Auth::guard('pelanggan')->user()->id;
+
+        $pesananAktif = Penjualan::where('id_pelanggan', $idPelanggan)
+            ->whereIn('status_order', ['Menunggu Konfirmasi', 'Diproses', 'Menunggu Kurir', 'Dalam Pengiriman'])
+            ->exists();
+
         return view('fe.keranjang.index', [
             'title' => 'Keranjang',
             'user' => Auth::guard('pelanggan')->user(),
@@ -32,6 +37,7 @@ class KeranjangController extends Controller
             'jenisKirimList' => JenisPengiriman::all(),
             'snapToken' => $snapToken,
             'penjualan' => $penjualan,
+            'pesananAktif' => $pesananAktif,
         ]);
     }
 

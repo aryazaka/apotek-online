@@ -16,6 +16,7 @@ class Obat extends Model
         'nama_obat',
         'id_jenis_obat',
         'harga_jual',
+        'margin',
         'deskripsi_obat',
         'foto1',
         'foto2',

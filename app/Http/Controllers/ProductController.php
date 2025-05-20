@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Obat;
 use App\Models\JenisObat;
 use App\Models\Keranjang;
+use App\Models\Penjualan;
 
 class ProductController extends Controller
 {
@@ -32,6 +33,10 @@ class ProductController extends Controller
     ? Auth::guard('pelanggan')->user()->id 
     : null;
 
+    $pesananAktif = Penjualan::where('id_pelanggan', $idPelanggan)
+            ->whereIn('status_order', ['Menunggu Konfirmasi', 'Diproses', 'Menunggu Kurir', 'Dalam Pengiriman'])
+            ->exists();
+
     return view('fe.product.index', [
         'title' => 'Produk',
         'user' => Auth::guard('pelanggan')->user(),
@@ -42,6 +47,7 @@ class ProductController extends Controller
         'keranjangs' => Keranjang::where('id_pelanggan', $idPelanggan)
                 ->with('obat')
                 ->get(),
+        'pesananAktif' => $pesananAktif,
     ]);
 }
 
@@ -73,6 +79,10 @@ class ProductController extends Controller
         ? Auth::guard('pelanggan')->user()->id 
         : null;
 
+        $pesananAktif = Penjualan::where('id_pelanggan', $idPelanggan)
+            ->whereIn('status_order', ['Menunggu Konfirmasi', 'Diproses', 'Menunggu Kurir', 'Dalam Pengiriman'])
+            ->exists();
+
         $relatedProducts = Obat::where('id_jenis_obat', $produk->id_jenis_obat)
             ->where('id', '!=', $produk->id)
             ->latest()
@@ -87,6 +97,7 @@ class ProductController extends Controller
             'keranjangs' => Keranjang::where('id_pelanggan', $idPelanggan)
                 ->with('obat')
                 ->get(),
+            'pesananAktif' => $pesananAktif,
         ]);
     }
 

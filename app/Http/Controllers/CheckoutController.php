@@ -25,6 +25,8 @@ class CheckoutController extends Controller
             'kode_transaksi' => 'TRX-' . strtoupper(Str::random(10)),
             'id_pelanggan' => Auth::guard('pelanggan')->user()->id,
             'tgl_penjualan' => now(),
+            'ongkos_kirim' => $request->ongkos_kirim,
+            'biaya_app' => $request->biaya_app,
             'url_resep' => $resepPath ?? null,
             'total_bayar' => $request->total_bayar,
             'id_jenis_kirim' => $request->id_jenis_kirim,

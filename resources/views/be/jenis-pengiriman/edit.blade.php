@@ -18,7 +18,7 @@
     <div class="card-body">
         <h4 class="card-title">Edit Jenis Pengiriman</h4>
 
-        <form class="forms-sample" method="POST" action="{{ route('jenis-pengiriman.update', $data->id) }}" enctype="multipart/form-data" id="frmJenisKirim">
+        <form class="forms-sample" method="POST" action="{{ route('jenis-kirim.update', $data->id) }}" enctype="multipart/form-data" id="frmJenisKirim">
             @csrf
             @method('PUT')
 
@@ -27,6 +27,14 @@
                 <input type="text" class="form-control @error('ekspedisi') is-invalid @enderror" name="nama_ekspedisi" value="{{ old('ekspedisi', $data->nama_ekspedisi) }}" placeholder="Nama Ekspedisi">
                 @error('nama_ekspedisi')
                     <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+             <div class="form-group">
+                <label for="ekspedisi">Harga</label>
+                <input type="number" class="form-control @error('harga') is-invalid @enderror" id="harga" name="harga" placeholder="Harga" value="{{ old('harga', $data->harga) }}">
+                @error('harga')
+                    <div class="invalid-feedback">{{$message}}</div>
                 @enderror
             </div>
 
@@ -65,7 +73,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary">Update</button>
-            <a href="{{ route('jenis-pengiriman.index') }}" class="btn btn-dark" id="btnCancel">Cancel</a>
+            <a href="{{ route('jenis-kirim.index') }}" class="btn btn-dark" id="btnCancel">Cancel</a>
         </form>
     </div>
 </div>
@@ -89,7 +97,7 @@
 
         btnCancel.addEventListener('click', function (e) {
             e.preventDefault();
-            window.location = "{{ route('jenis-pengiriman.index') }}";
+            window.location = "{{ route('jenis-kirim.index') }}";
         });
     });
 </script>

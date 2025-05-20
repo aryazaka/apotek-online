@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id(); 
             $table->string('kode_transaksi', 255)->nullable();
             $table->string('snap_token', 255)->nullable();
-            $table->foreignId('id_metode_bayar')->constrained('metode_bayar')->onDelete('cascade')->nullable();
+            $table->foreignId('id_metode_bayar')->nullable()->constrained('metode_bayar')->onDelete('cascade');
             $table->date('tgl_penjualan');
             $table->string('url_resep', 255)->nullable();
             $table->decimal('ongkos_kirim', 10, 2)->default(0);

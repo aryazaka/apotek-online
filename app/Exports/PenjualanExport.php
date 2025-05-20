@@ -20,7 +20,7 @@ class PenjualanExport implements FromView
     }
      public function view(): View
     {
-        $query = Penjualan::with(['pelanggan', 'detailPenjualan.Obat']);
+        $query = Penjualan::with(['pelanggan', 'detailPenjualan.Obat', 'pengiriman']);
 
         if ($this->from && $this->to) {
             $query->whereBetween('tgl_penjualan', [$this->from, $this->to]);

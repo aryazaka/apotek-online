@@ -13,13 +13,17 @@ Route::middleware(['checkRole:admin'])->group(function () {
 });
 
 Route::middleware(['checkRole:karyawan'])->group(function () {
-    Route::resource('/jenis', App\Http\Controllers\JenisObatController::class);
 });
 
 Route::middleware(['checkRole:apoteker'])->group(function () {
     Route::resource('/pembelian', App\Http\Controllers\PembelianController::class);
     Route::resource('/distributor', App\Http\Controllers\DistributorController::class);
     Route::post('/obat/update-margin', [App\Http\Controllers\ObatController::class, 'updateMargin'])->name('obat.updateMargin');
+    Route::resource('/jenis', App\Http\Controllers\JenisObatController::class);
+     Route::get('/obat/create', [App\Http\Controllers\ObatController::class, 'create'])->name('obat.create');
+    Route::post('/obat', [App\Http\Controllers\ObatController::class, 'store'])->name('obat.store');
+    Route::delete('/obat/{obat}', [App\Http\Controllers\ObatController::class, 'destroy'])->name('obat.destroy');
+
 });
 
 Route::middleware(['checkRole:kasir'])->group(function () {
@@ -41,12 +45,20 @@ Route::middleware(['checkRole:pemilik'])->group(function () {
 });
 
 Route::middleware(['checkRole:kurir'])->group(function () {
-    Route::resource('jenis-pengiriman', App\Http\Controllers\JenisPengirimanController::class);
+    Route::resource('jenis-kirim', App\Http\Controllers\JenisPengirimanController::class);
+    Route::get('pengiriman',[App\Http\Controllers\PengirimanController::class, 'index'])->name('pengiriman.index');
+    Route::post('/pengiriman/ubah-status', [App\Http\Controllers\PengirimanController::class, 'ubahStatus'])->name('pengiriman.ubahStatus');
+    Route::post('/pengiriman', [App\Http\Controllers\PengirimanController::class, 'store'])->name('pengiriman.store');
+
+
 
 });
 
 Route::middleware(['checkRole:karyawan,apoteker,kasir'])->group(function () {
-    Route::resource('/obat', App\Http\Controllers\ObatController::class);
+     Route::get('/obat', [App\Http\Controllers\ObatController::class, 'index'])->name('obat.index');
+    Route::get('/obat/{obat}', [App\Http\Controllers\ObatController::class, 'show'])->name('obat.show');
+    Route::get('/obat/{obat}/edit', [App\Http\Controllers\ObatController::class, 'edit'])->name('obat.edit');
+    Route::put('/obat/{obat}', [App\Http\Controllers\ObatController::class, 'update'])->name('obat.update');
 });
 
 Route::middleware(['checkRole:kasir,karyawan'])->group(function () {
@@ -65,6 +77,8 @@ Route::post('/login-management', [App\Http\Controllers\AuthManagementController:
 Route::post('/logout-management', [App\Http\Controllers\AuthManagementController::class, 'logout'])->name('auth-management.logout');
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home.index');
+Route::resource('/about', App\Http\Controllers\AboutController::class);
+Route::resource('/contact', App\Http\Controllers\ContactController::class);
 Route::get('/login', [App\Http\Controllers\AuthPelangganController::class, 'getLogin'])->name('getLogin.pelanggan');
 Route::get('/register', [App\Http\Controllers\AuthPelangganController::class, 'getRegister'])->name('getRegister.pelanggan');
 
@@ -76,6 +90,7 @@ Route::get('/produk', [App\Http\Controllers\ProductController::class, 'index'])-
 Route::get('/produk/{id}', [App\Http\Controllers\ProductController::class, 'show'])->name('produk.show');
 
 Route::middleware(['checkAuthPelanggan'])->group(function () {
+    Route::resource('/profile', App\Http\Controllers\ProfilePelangganController::class);
     Route::get('/keranjang', [App\Http\Controllers\KeranjangController::class, 'index'])->name('keranjang.index');
     Route::post('/keranjang/tambah', [App\Http\Controllers\KeranjangController::class, 'tambah'])->name('keranjang.tambah');
     Route::post('/keranjang/update', [App\Http\Controllers\KeranjangController::class, 'update'])->name('keranjang.update');
@@ -91,4 +106,6 @@ Route::middleware(['checkAuthPelanggan'])->group(function () {
     Route::post('/pesanan/update-status/{id}', [App\Http\Controllers\PesananController::class, 'updateStatus'])->name('pesanan.update-status');
     Route::get('/pesanan/finish', [App\Http\Controllers\PesananController::class, 'finish'])->name('pesanan.finish');
     Route::delete('/pesanan/{id}/batal', [App\Http\Controllers\PesananController::class, 'batalkanPesanan'])->name('pesanan.batalkan');
+    Route::post('/pesanan/bermasalah/{id}', [App\Http\Controllers\PesananController::class, 'bermasalah'])->name('pesanan.bermasalah');
+    Route::patch('/pesanan/{id}/selesai', [App\Http\Controllers\PesananController::class, 'selesaikan'])->name('pesanan.selesai');
 });

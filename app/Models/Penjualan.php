@@ -42,5 +42,14 @@ public function pengiriman()
     return $this->hasOne(Pengiriman::class, 'id_penjualan');
 }
 
+public function metodeBayar()
+{
+    return $this->belongsTo(MetodeBayar::class, 'id_metode_bayar');
+}
+
+public function jenisKirim()
+{
+    return $this->belongsTo(JenisPengiriman::class, 'id_jenis_kirim');
+}
 
 }

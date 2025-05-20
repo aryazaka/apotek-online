@@ -33,20 +33,40 @@ class PesananController extends Controller
             ? Auth::guard('pelanggan')->user()
             : null;
 
-        $belumBayar = Penjualan::with('detailPenjualan.obat')->get()->filter(fn($item) => $item->keterangan_status === 'Menunggu Konfirmasi Pembayaran');;
+        $belumBayar = Penjualan::with(['detailPenjualan.obat', 'pelanggan'])->where('id_pelanggan', $pelanggan->id)->get()->filter(fn($item) => $item->keterangan_status === 'Menunggu Konfirmasi Pembayaran');
 
-        $diproses = Penjualan::with('detailPenjualan.obat')->get()->filter(
+        $diproses = Penjualan::with(['detailPenjualan.obat', 'pelanggan'])->where('id_pelanggan', $pelanggan->id)->get()->filter(
             fn($item) =>
             $item->status_order === 'Diproses' ||
-                ($item->status_order === 'Menunggu Konfirmasi' && $item->keterangan_status === 'Tunggu Konfirmasi dari Admin')
-        );;
+                ($item->status_order === 'Menunggu Konfirmasi' && $item->keterangan_status === 'Tunggu Konfirmasi dari Admin') || $item->status_order === 'Menunggu Kurir'
+        );
 
-        $pengiriman = Penjualan::with('detailPenjualan.obat')
+        $pengiriman = Penjualan::with(['detailPenjualan.obat', 'pengiriman', 'pelanggan'])
             ->where('id_pelanggan', $pelanggan->id)
             ->whereHas('pengiriman', function ($query) {
                 $query->where('status_kirim', 'Sedang Dikirim');
             })
             ->get();
+
+        $selesai = Penjualan::with(['detailPenjualan.obat', 'pengiriman', 'pelanggan'])
+            ->where('id_pelanggan', $pelanggan->id)
+            ->whereHas('pengiriman', function ($query) {
+                $query->where('status_kirim', 'Tiba Di Tujuan');
+            })
+            ->get()->filter(
+                fn($item) =>
+                $item->status_order === 'Dalam Pengiriman' || ($item->status_order === 'Selesai')
+            );
+        $selesaiPengirimanCount = $selesai->filter(fn($item) => $item->status_order === 'Dalam Pengiriman')->count();
+
+        $salah = Penjualan::with(['detailPenjualan.obat', 'pengiriman', 'pelanggan'])
+            ->where('id_pelanggan', $pelanggan->id)
+            ->whereIn('status_order', ['Bermasalah', 'Dibatalkan Pembeli', 'Dibatalkan Penjual'])
+            ->get();
+
+        $pesananAktif = Penjualan::where('id_pelanggan', $pelanggan->id)
+            ->whereIn('status_order', ['Menunggu Konfirmasi', 'Diproses', 'Menunggu Kurir', 'Dalam Pengiriman'])
+            ->exists();
 
         return view('fe.pesanan.index', [
             'title' => 'Pesanan',
@@ -57,6 +77,10 @@ class PesananController extends Controller
             'belumBayars' => $belumBayar,
             'diprosess' => $diproses,
             'pengirimans' => $pengiriman,
+            'selesais' => $selesai,
+            'selesaiPengirimanCount' => $selesaiPengirimanCount,
+            'salahs' => $salah,
+            'pesananAktif' => $pesananAktif,
         ]);
     }
 
@@ -104,6 +128,16 @@ class PesananController extends Controller
                             'url_logo' => '-',
                         ]
                     );
+                } else if ($paymentType == 'echannel') {
+                    $metodeBayar = MetodeBayar::firstOrCreate(
+                        ['metode_pembayaran' => $paymentType],
+                        [
+                            'metode_pembayaran' => $metodeNama,
+                            'tempat_bayar' => $metodeNama,
+                            'no_rekening' => $vaNumbers[0]['va_number'] ?? '-',
+                            'url_logo' => '-',
+                        ]
+                    );
                 }
 
                 $penjualan->id_metode_bayar = $metodeBayar->id | null;
@@ -121,17 +155,22 @@ class PesananController extends Controller
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Pesanan berhasi dibayar.'
+                    'message' => 'Pesanan berhasil dibayar.'
                 ]);
             }
 
             // Tambahan kalau pending atau gagal
-            if ($transactionStatus == 'pending') {
+            if ($transactionStatus === 'pending') {
                 $penjualan->status_order = 'Menunggu Konfirmasi';
                 $penjualan->keterangan_status = 'Pembayaran masih dalam proses.';
-            } elseif ($transactionStatus == 'cancel' || $transactionStatus == 'expire') {
-                $penjualan->status_order = 'Dibatalkan';
-                $penjualan->keterangan_status = 'Pembayaran dibatalkan.';
+            } elseif (in_array($transactionStatus, ['cancel', 'expire', 'deny', 'failure', 'error'])) {
+                $penjualan->status_order = 'Bermasalah';
+                $penjualan->keterangan_status = 'Pembayaran gagal atau dibatalkan.';
+                Log::warning("Pembayaran gagal: Order ID $orderId, Status: $transactionStatus");
+            } else {
+                $penjualan->status_order = 'Bermasalah';
+                $penjualan->keterangan_status = 'Status tidak diketahui dari Midtrans.';
+                Log::warning("Status tidak dikenal: $transactionStatus untuk order $orderId");
             }
 
             $penjualan->save();
@@ -152,6 +191,25 @@ class PesananController extends Controller
         $penjualan->save();
 
         return redirect()->back()->with('success', 'Pesanan berhasil dibatalkan.');
+    }
+
+    public function selesaikan($id)
+    {
+        $penjualan = Penjualan::findOrFail($id);
+
+        // Pastikan status saat ini valid untuk diselesaikan
+        if (
+            $penjualan->status_order === 'Dalam Pengiriman' &&
+            optional($penjualan->pengiriman)->status_kirim === 'Tiba Di Tujuan'
+        ) {
+            $penjualan->status_order = 'Selesai';
+            $penjualan->keterangan_status = 'Pesanan diterima pelanggan';
+            $penjualan->save();
+
+            return back()->with('success', 'Pesanan sudah selesai.');
+        }
+
+        return back()->with('error', 'Pesanan tidak valid untuk diselesaikan.');
     }
 
 

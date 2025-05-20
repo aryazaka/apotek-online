@@ -356,6 +356,7 @@ ol {
 	color: #1e1e1e;
 	font-size: 16px;
 	display: inline-block;
+	text-decoration: none;
 	font-weight: 500;
 	position: relative;
 	line-height: 42px;
