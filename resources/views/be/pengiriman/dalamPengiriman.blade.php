@@ -45,7 +45,20 @@
                 </td>
 
                 <td class="px-3 py-3">
-                    {{ $alamatPengirimans[$idx] }}
+                    @php
+                    $alamat = null;
+                    for ($i=1; $i <= 3; $i++) {
+                        $a=$penjualan->pelanggan->{"alamat$i"} ?? null;
+                        if ($a) {
+                        $alamat = $a . ', ' .
+                        ($penjualan->pelanggan->{"kota$i"} ?? '') . ', ' .
+                        ($penjualan->pelanggan->{"propinsi$i"} ?? '') . ', ' .
+                        ($penjualan->pelanggan->{"kodepos$i"} ?? '');
+                        break;
+                        }
+                        }
+                        @endphp
+                        {{ $alamat ?? 'Alamat tidak tersedia' }}
                 </td>
 
                 <td class="text-center px-3 py-3">
@@ -120,7 +133,7 @@
                                                 Sedang Dikirim
                                             </option>
                                             <option value="Tiba Di Tujuan" {{ $item->status_kirim == 'Tiba Di Tujuan' ? 'selected' : '' }}>
-                                                Tiba D  i Tujuan
+                                                Tiba D i Tujuan
                                             </option>
                                         </select>
                                     </div>
@@ -387,47 +400,47 @@
         });
 
         // Enhanced Camera input handling
-   document.querySelectorAll('.bukti-foto-group').forEach(group => {
-    const depan = group.querySelector('input[capture="user"]');
-    const belakang = group.querySelector('input[capture="environment"]');
+        document.querySelectorAll('.bukti-foto-group').forEach(group => {
+            const depan = group.querySelector('input[capture="user"]');
+            const belakang = group.querySelector('input[capture="environment"]');
 
-    const tombolDepan = group.querySelector('button[onclick*="' + depan.id + '"]');
-    const tombolBelakang = group.querySelector('button[onclick*="' + belakang.id + '"]');
+            const tombolDepan = group.querySelector('button[onclick*="' + depan.id + '"]');
+            const tombolBelakang = group.querySelector('button[onclick*="' + belakang.id + '"]');
 
-    if (depan && belakang && tombolDepan && tombolBelakang) {
-        [depan, belakang].forEach(input => {
-            input.addEventListener('change', function() {
-                if (this.files.length > 0) {
-                    // Sembunyikan tombol yang satunya
-                    if (this === depan) {
-                        tombolBelakang.style.display = 'none';
-                    } else {
-                        tombolDepan.style.display = 'none';
-                    }
+            if (depan && belakang && tombolDepan && tombolBelakang) {
+                [depan, belakang].forEach(input => {
+                    input.addEventListener('change', function() {
+                        if (this.files.length > 0) {
+                            // Sembunyikan tombol yang satunya
+                            if (this === depan) {
+                                tombolBelakang.style.display = 'none';
+                            } else {
+                                tombolDepan.style.display = 'none';
+                            }
 
-                    // Update tombol yang dipilih
-                    const tombol = this === depan ? tombolDepan : tombolBelakang;
-                    const fileName = this.files[0].name;
-                    tombol.innerHTML = `<i class="fas fa-check text-success me-2"></i>${fileName}`;
-                    tombol.classList.add('btn-success');
-                    tombol.classList.remove('btn-outline-primary', 'btn-outline-secondary');
-                } else {
-                    // Jika batal pilih, tampilkan semua tombol dan reset tampilan tombol
-                    tombolDepan.style.display = 'inline-block';
-                    tombolBelakang.style.display = 'inline-block';
+                            // Update tombol yang dipilih
+                            const tombol = this === depan ? tombolDepan : tombolBelakang;
+                            const fileName = this.files[0].name;
+                            tombol.innerHTML = `<i class="fas fa-check text-success me-2"></i>${fileName}`;
+                            tombol.classList.add('btn-success');
+                            tombol.classList.remove('btn-outline-primary', 'btn-outline-secondary');
+                        } else {
+                            // Jika batal pilih, tampilkan semua tombol dan reset tampilan tombol
+                            tombolDepan.style.display = 'inline-block';
+                            tombolBelakang.style.display = 'inline-block';
 
-                    tombolDepan.innerHTML = `<i class="fas fa-camera me-2"></i>Kamera Depan`;
-                    tombolDepan.classList.remove('btn-success');
-                    tombolDepan.classList.add('btn-outline-primary');
+                            tombolDepan.innerHTML = `<i class="fas fa-camera me-2"></i>Kamera Depan`;
+                            tombolDepan.classList.remove('btn-success');
+                            tombolDepan.classList.add('btn-outline-primary');
 
-                    tombolBelakang.innerHTML = `<i class="fas fa-camera me-2"></i>Kamera Belakang`;
-                    tombolBelakang.classList.remove('btn-success');
-                    tombolBelakang.classList.add('btn-outline-secondary');
-                }
-            });
+                            tombolBelakang.innerHTML = `<i class="fas fa-camera me-2"></i>Kamera Belakang`;
+                            tombolBelakang.classList.remove('btn-success');
+                            tombolBelakang.classList.add('btn-outline-secondary');
+                        }
+                    });
+                });
+            }
         });
-    }
-});
         // Enhanced Image popup
         document.querySelectorAll('.popup-image').forEach(img => {
             img.addEventListener('click', function() {
@@ -442,31 +455,31 @@
 
         // Loading states for forms
         document.querySelectorAll('form').forEach(form => {
-    form.addEventListener('submit', function (e) {
-        const modal = form.closest('.modal');
-        const statusSelect = modal?.querySelector('.status-select');
-        const statusValue = statusSelect?.value;
+            form.addEventListener('submit', function(e) {
+                const modal = form.closest('.modal');
+                const statusSelect = modal?.querySelector('.status-select');
+                const statusValue = statusSelect?.value;
 
-        if (statusValue === 'Tiba Di Tujuan') {
-            const fotoGroup = modal.querySelector('.bukti-foto-group');
-            const depan = fotoGroup.querySelector('input[capture="user"]');
-            const belakang = fotoGroup.querySelector('input[capture="environment"]');
+                if (statusValue === 'Tiba Di Tujuan') {
+                    const fotoGroup = modal.querySelector('.bukti-foto-group');
+                    const depan = fotoGroup.querySelector('input[capture="user"]');
+                    const belakang = fotoGroup.querySelector('input[capture="environment"]');
 
-            if ((!depan.files || depan.files.length === 0) && (!belakang.files || belakang.files.length === 0)) {
-                e.preventDefault();
-                swal("Invalid Data", "Silakan unggah minimal satu bukti foto (depan atau belakang)", "error");
-                return;
-            }
-        }
+                    if ((!depan.files || depan.files.length === 0) && (!belakang.files || belakang.files.length === 0)) {
+                        e.preventDefault();
+                        swal("Invalid Data", "Silakan unggah minimal satu bukti foto (depan atau belakang)", "error");
+                        return;
+                    }
+                }
 
-        // Lanjutkan loading state
-        const submitBtn = form.querySelector('button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Memproses...';
-        }
-    });
-});
+                // Lanjutkan loading state
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Memproses...';
+                }
+            });
+        });
 
 
         // Auto-dismiss alerts after 5 seconds

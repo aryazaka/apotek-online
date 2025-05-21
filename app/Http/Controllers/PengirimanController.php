@@ -42,31 +42,11 @@ class PengirimanController extends Controller
             return null;
         });
 
-        $alamatPengirimans = $pengirimanList->map(function ($pengiriman) {
-    $pelanggan = $pengiriman->penjualan?->pelanggan;
-
-    if ($pelanggan) {
-        for ($i = 1; $i <= 3; $i++) {
-            $alamat = $pelanggan->{"alamat$i"};
-            if ($alamat) {
-                return $alamat . ', ' .
-                    $pelanggan->{"kota$i"} . ', ' .
-                    $pelanggan->{"propinsi$i"} . ', ' .
-                    $pelanggan->{"kodepos$i"};
-            }
-        }
-    }
-
-    return null;
-});
-
-
         return view('be.pengiriman.index', [
             'title' => 'Pengiriman',
             'penjualans' => $penjualans,
             'pengirimanList' => $pengirimanList,
             'alamatPenjualans' => $alamatPenjualans,
-            'alamatPengirimans' => $alamatPengirimans
         ]);
     }
 

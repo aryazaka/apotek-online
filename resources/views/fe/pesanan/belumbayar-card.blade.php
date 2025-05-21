@@ -1,7 +1,6 @@
 <!-- Card -->
 <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 
-@if ($belumBayar->status_order == 'Menunggu Konfirmasi' && $belumBayar->keterangan_status == 'Menunggu Konfirmasi Pembayaran')
 
 <div class="card mb-4 shadow-sm border">
     <!-- Card Header with nice styling -->
@@ -157,69 +156,30 @@
                 </div>
 
                 <!-- Product List Section -->
-                <h6 class="fw-bold mb-3">Daftar Produk</h6>
+                <!-- List Produk -->
+<div class="mt-3">
+    <h6 class="fw-bold">Daftar Produk:</h6>
+    <ul class="list-group list-group-flush">
+        @foreach($belumBayar->detailPenjualan as $detail)
+@php
+    $produk = $detail->obat; // Pastikan relasi 'obat' tersedia
+@endphp
+<div class="d-flex mb-3 border rounded p-2 bg-white shadow-sm">
+    <img src="{{ $produk->foto1 ? asset('storage/' . $produk->foto1) : asset('images/default.png') }}"
+        alt="{{ $produk->nama_obat }}"
+        class="me-3 rounded"
+        style="width: 80px; height: 80px; object-fit: cover;">
 
-                <div class="products-list">
-                    @foreach ($belumBayar->detailPenjualan as $detail)
-                    <div class="card mb-3">
-                        <div class="row g-0">
-                            <!-- Product Image -->
-                            <div class="col-md-3">
-                                <div class="p-3 h-100 d-flex align-items-center justify-content-center bg-light">
-                                    @if($detail->obat->foto1)
-                                    <img src="{{ asset('storage/' . $detail->obat->foto1) }}"
-                                        alt="{{ $detail->obat->nama_obat }}"
-                                        class="img-fluid" style="max-height: 120px; object-fit: contain;">
-                                    @else
-                                    <div class="text-center">
-                                        <i class="fa-solid fa-pills fa-3x text-secondary"></i>
-                                    </div>
-                                    @endif
-                                </div>
-                            </div>
+    <div class="flex-grow-1">
+        <h6 class="mb-1">{{ $produk->nama_obat }}</h6>
+        <p class="mb-0 small text-muted">Jumlah: {{ $detail->jumlah_beli }} x Rp{{ number_format($detail->harga_beli, 0, ',', '.') }}</p>
+        <p class="mb-0 fw-semibold text-success">Subtotal: Rp{{ number_format($detail->subtotal, 0, ',', '.') }}</p>
+    </div>
+</div>
+@endforeach
 
-                            <!-- Product Details -->
-                            <div class="col-md-9">
-                                <div class="card-body">
-                                    <h5 class="card-title fw-bold">{{ $detail->obat->nama_obat }}</h5>
-
-                                    @if($detail->obat->deskripsi)
-                                    <p class="card-text small text-muted mb-3">{{ Str::limit($detail->obat->deskripsi, 100) }}</p>
-                                    @endif
-
-                                    <div class="row g-3 mt-2">
-                                        <div class="col-md-4">
-                                            <div class="small text-muted">Harga Satuan</div>
-                                            <div class="fw-medium">Rp{{ number_format($detail->harga_beli, 0, ',', '.') }}</div>
-                                        </div>
-
-                                        <div class="col-md-4">
-                                            <div class="small text-muted">Jumlah</div>
-                                            <div class="fw-medium">{{ $detail->jumlah_beli }} item</div>
-                                        </div>
-
-                                        <div class="col-md-4">
-                                            <div class="small text-muted">Subtotal</div>
-                                            <div class="fw-bold text-success">Rp{{ number_format($detail->jumlah_beli * $detail->harga_beli, 0, ',', '.') }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-
-                <!-- Order Summary -->
-                <div class="card mt-4 bg-light">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="fw-bold mb-0">Total Pembayaran</h6>
-                            <p class="fw-bold fs-5 text-success mb-0">Rp{{ number_format($belumBayar->total_bayar, 0, ',', '.') }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    </ul>
+</div>
 
             <!-- Modal Footer -->
             <div class="modal-footer">
@@ -232,7 +192,7 @@
                     <i class="fa-solid fa-credit-card me-1 small"></i>
                     Bayar Sekarang
                 </button>
-                <form action="{{ route('pesanan.batalkan', $belumBayar->id) }}" method="POST" id="cancelOrderForm" class="w-100">
+                <form action="{{ route('pesanan.batalkan', $belumBayar->id) }}" method="POST" id="cancelOrderFormDetail" class="w-100">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-outline-danger w-100">
@@ -383,6 +343,25 @@
             }
         });
     });
+
+    document.getElementById('cancelOrderFormDetail').addEventListener('submit', function(event) {
+        event.preventDefault(); // Mencegah form submit otomatis
+
+        // Tampilkan konfirmasi SweetAlert2
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: 'Pesanan ini akan dibatalkan!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Batalkan!',
+            cancelButtonText: 'Tidak, Kembali',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Jika user mengonfirmasi, kirimkan form
+                this.submit();
+            }
+        });
+    });
 </script>
 
 
@@ -398,5 +377,4 @@
         window.location.reload();
     });
 </script>
-@endif
 @endif

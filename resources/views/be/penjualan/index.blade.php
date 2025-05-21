@@ -50,6 +50,9 @@
         <td>{{ $penjualan->kode_transaksi }}</td>
         <td>{{ $penjualan->pelanggan->nama_pelanggan }}</td>
         <td class="text-center">
+          @if ($penjualan->pengiriman && $penjualan->pengiriman->status_kirim === 'Tiba Di Tujuan')
+          <span class="badge bg-success">Tiba di Tujuan</span>
+          @else
           @switch($penjualan->status_order)
           @case('Menunggu Konfirmasi')
           <span class="badge bg-warning text-dark">{{ $penjualan->status_order }}</span>
@@ -70,8 +73,10 @@
           @default
           <span class="badge bg-secondary">{{ $penjualan->status_order }}</span>
           @endswitch
+          @endif
         </td>
-        <td>{{ $penjualan->keterangan_status }}</td>
+
+        <td>@if ($penjualan->pengiriman && $penjualan->pengiriman->status_kirim === 'Tiba Di Tujuan'){{ $penjualan->pengiriman->keterangan }}@else{{ $penjualan->keterangan_status }}@endif</td>
         <td>Rp{{ number_format($penjualan->total_bayar, 0, ',', '.') }}</td>
         <td class="text-center">
           <!-- Tombol Detail -->
@@ -79,12 +84,17 @@
             Detail
           </button>
 
-          @if(!in_array($penjualan->status_order, ['Dibatalkan Pembeli', 'Bermasalah', 'Selesai']))
+          @php
+          $tidakBolehUbahStatus = ['Dibatalkan Pembeli', 'Dibatalkan Penjual', 'Bermasalah', 'Selesai', 'Dalam Pengiriman'];
+          @endphp
+
+          @if(in_array(Auth::user()->jabatan, ['apoteker', 'karyawan']) && !in_array($penjualan->status_order, $tidakBolehUbahStatus))
           <!-- Tombol Ubah Status -->
           <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalStatus{{ $penjualan->id }}">
             Ubah Status
           </button>
           @endif
+
 
         </td>
 
